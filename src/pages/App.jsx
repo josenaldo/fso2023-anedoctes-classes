@@ -1,18 +1,46 @@
-import { Route, Routes } from 'react-router-dom'
+import axios from 'axios'
+import React from 'react'
 
-import { Template } from '@/features/layout'
-import AboutPage from '@/pages/AboutPage'
-import HomePage from '@/pages/HomePage'
+class App extends React.Component {
+  constructor(props) {
+    super(props)
 
-const IndexPage = () => {
-  return (
-    <Template>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-      </Routes>
-    </Template>
-  )
+    this.state = {
+      anecdotes: [],
+      current: 0,
+    }
+  }
+
+  componentDidMount = () => {
+    axios.get('http://localhost:3001/anecdotes').then((response) => {
+      this.setState({
+        anecdotes: response.data,
+      })
+    })
+  }
+
+  handleClick = () => {
+    const current = Math.floor(Math.random() * this.state.anecdotes.length)
+
+    this.setState({
+      current,
+    })
+  }
+
+  render() {
+    if (this.state.anecdotes.length === 0) {
+      return <div>No anecdotes</div>
+    }
+    return (
+      <main>
+        <div className="container">
+          <h1>Anecdote of the day</h1>
+          <div>{this.state.anecdotes[this.state.current].content}</div>
+          <button onClick={this.handleClick}>Next</button>
+        </div>
+      </main>
+    )
+  }
 }
 
-export default IndexPage
+export default App
